@@ -93,27 +93,8 @@
   </div>
 </section>
 
-<!-- ============================================================ two drones -->
-<section class="section results" id="videos">
-  <div class="container">
-    <h2 class="title is-3">Motivating example: two delivery drones</h2>
-    <p class="task-intro">
-      The direct routes of two delivery drones cross one airspace cell that can hold a single drone. Each
-      drone takes off now (P), saving 3 minutes, or waits (W), saving nothing. Without incentives, P pays more
-      whatever the other drone does, so (P, P) is the unique Nash equilibrium (NE), and it is unsafe. CHASE
-      finds the unsafe combination (P, P); Z3 returns the smallest penalty, I = 3.1, with a certificate stored
-      in the contract of drone 2: in (P, P), drone 2 gains 0.1 by switching to W. The NE become (P, W) and
-      (W, P): one drone takes off, the other waits, and nobody pays the penalty.
-    </p>
-    <div class="video-wide" style="max-width:52rem;">
-      <video autoplay loop muted playsinline controls src="assets/drones.mp4"></video>
-    </div>
-    <p class="note-line" style="text-align:center;">Left: no incentive (I = 0). Right: certified penalty I = 3.1.</p>
-  </div>
-</section>
-
 <!-- ============================================================ queue -->
-<section class="section results">
+<section class="section results" id="videos">
   <div class="container">
     <h2 class="title is-3">Why a priority rule needs incentives: drones queueing for a corridor</h2>
     <p class="task-intro">
