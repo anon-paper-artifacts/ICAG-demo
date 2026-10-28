@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Simulation videos of incentive-compatible assume-guarantee contracts: penalties and local certificates that make every Nash equilibrium of a non-cooperative multi-agent system safe.">
+  <meta name="keywords" content="assume-guarantee contracts, Nash equilibrium, incentive design, multi-agent systems, cyber-physical systems">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ICAG</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%88%EF%B8%8F</text></svg>">
+
+  <style>
+    body { font-family: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    .publication-title, .publication-authors { font-family: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    .publication-venue { color: #555; font-weight: 700; }
+    .publication-status { color: #555; }
+    .link-block a { margin: 5px; }
+    section.results { border-top: 1px solid #ececec; }
+    section.results .title.is-3 { text-align: center; padding-bottom: .3rem; }
+    .task-intro { max-width: 62rem; margin: 0 auto 1.4rem; text-align: left; color: #4a4a4a; }
+    .video-wide { max-width: 62rem; margin: 0 auto 1rem; }
+    .video-wide video { width: 100%; border-radius: 10px; border: 1px solid #bbb; display: block; background: #0e1117; }
+    .caption { max-width: 62rem; margin: 0 auto 1.6rem; color: #4a4a4a; font-size: .92rem; }
+    .caption li { margin-bottom: 4px; }
+    table.res { margin: 0 auto 1.2rem; font-size: .9rem; }
+    table.res th, table.res td { padding: 4px 12px; text-align: center; }
+    table.res td:first-child, table.res th:first-child { text-align: left; }
+    .ours { font-weight: 700; color: #1a7f37; }
+    .note-line { max-width: 62rem; margin: 0 auto; text-align: left; font-style: italic; color: #555; font-size: .85rem; }
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; max-width: 70rem; margin: 0 auto 1.4rem; }
+    .grid .cell { width: 460px; max-width: 100%; }
+    .grid video { width: 100%; border-radius: 10px; border: 1px solid #bbb; background: #0e1117; display: block; }
+    .grid .label { margin-top: 6px; font-weight: 600; color: #363636; }
+    .grid .desc { color: #4a4a4a; font-size: .88rem; }
+    footer.footer { background: #fafafa; }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-10">
+          <h1 class="title is-1 publication-title">
+            Incentive-Compatible Assume&ndash;Guarantee Contracts<br>
+            <span style="font-weight:400;">for Multi-Agent Cyber-Physical System Design</span>
+          </h1>
+          <h2 class="subtitle is-4 publication-venue" style="margin-top:.8rem;">Under review</h2>
+          <div class="is-size-5 publication-authors">Anonymous Authors</div>
+          <div class="link-block" style="margin-top:1rem;">
+            <a href="https://anonymous.4open.science/r/ICAG" class="button is-dark is-rounded">
+              <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+            </a>
+            <a href="#videos" class="button is-dark is-rounded">
+              <span class="icon"><i class="fas fa-film"></i></span><span>Videos</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Assume&ndash;guarantee (A/G) contracts provide formal specifications for the modular design and
+            verification of cyber-physical systems (CPS) by specifying each component through the assumptions
+            it makes on its environment and the guarantees it provides. In multi-agent CPS, however, each
+            component is an agent with its own objective, and a contract does not specify which of its
+            admissible behaviours a self-interested agent will choose in a non-cooperative setting when it
+            interacts with other agents and with the environment. We propose <em>incentive-compatible A/G
+            contracts</em>, which extend A/G contracts in linear temporal logic (LTL) with a payoff for each
+            agent and an enforceable penalty for unsafe joint behaviour. Model checking identifies the unsafe
+            combinations of decisions as counterexamples to the system requirements, and SMT solving computes
+            the penalties together with <em>certificates</em> that exclude each unsafe combination from the
+            Nash equilibria: a certificate names an agent that gains at least a fixed margin by changing its
+            own decision, and is stored in the contract of that agent. The certificates guarantee that every
+            Nash equilibrium of the composed system is safe, and they remain valid when an agent is replaced
+            by one whose contract refines its own. We then develop rules to add and remove agents while
+            reusing the existing certificates.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ two drones -->
+<section class="section results" id="videos">
+  <div class="container">
+    <h2 class="title is-3">Motivating example: two delivery drones</h2>
+    <p class="task-intro">
+      The direct routes of two delivery drones cross one airspace cell that can hold a single drone. Each
+      drone takes off now (P), saving 3 minutes, or waits (W), saving nothing. Without incentives, P pays more
+      whatever the other drone does, so (P, P) is the unique Nash equilibrium (NE), and it is unsafe. CHASE
+      finds the unsafe combination (P, P); Z3 returns the smallest penalty, I = 3.1, with a certificate stored
+      in the contract of drone 2: in (P, P), drone 2 gains 0.1 by switching to W. The NE become (P, W) and
+      (W, P): one drone takes off, the other waits, and nobody pays the penalty.
+    </p>
+    <div class="video-wide" style="max-width:52rem;">
+      <video autoplay loop muted playsinline controls src="assets/drones.mp4"></video>
+    </div>
+    <p class="note-line" style="text-align:center;">Left: no incentive (I = 0). Right: certified penalty I = 3.1.</p>
+  </div>
+</section>
+
+<!-- ============================================================ queue -->
+<section class="section results">
+  <div class="container">
+    <h2 class="title is-3">Why a priority rule needs incentives: drones queueing for a corridor</h2>
+    <p class="task-intro">
+      Drones arrive in a stream and enter a long, narrow corridor whose mouth admits one drone per 4&nbsp;s
+      slot, like a queue at a canteen window. Each drone chooses its entry slot; its payoff is its value of
+      time times the delay saved. A first-come-first-served (FCFS) rule assigns the slots, but it does not
+      change the payoffs: a selfish drone gains by cutting in. A penalty on two drones in one slot makes
+      queueing the best reply of every drone.
+    </p>
+    <div class="video-wide">
+      <video autoplay loop muted playsinline controls src="assets/queue.mp4"></video>
+    </div>
+    <table class="res">
+      <tr><th>50 runs &times; 240 s</th><th>entered</th><th>cut-ins</th><th>pairs within 10 m</th><th>max. crowd at the mouth</th></tr>
+      <tr><td>No rule, no incentive</td><td>1535 / 1765</td><td>584</td><td>5247</td><td>25</td></tr>
+      <tr><td>FCFS rule only, 30% selfish</td><td>1696 / 1765</td><td>397</td><td>1781</td><td>25</td></tr>
+      <tr><td class="ours">FCFS rule + penalty (all drones self-interested)</td><td class="ours">1765 / 1765</td><td class="ours">0</td><td class="ours">14</td><td class="ours">1</td></tr>
+    </table>
+    <p class="note-line">The 14 pairs of the last row also occur when every drone obeys the rule; they come from the motion in the queue, not from the decisions.</p>
+  </div>
+</section>
+
+<!-- ============================================================ highway -->
+<section class="section results">
+  <div class="container">
+    <h2 class="title is-3">Highway on-ramp merging</h2>
+    <p class="task-intro">
+      The merging scenario of optimizing A/G contracts (DATE'19): a main lane and an on-ramp, Poisson
+      arrivals, and 3&nbsp;s templates chosen every 0.5&nbsp;s. The non-cooperative composition of DATE'19 uses
+      only templates that are safe against every template of the neighbours: it never loses separation but
+      deadlocks before the merge region. With the certified penalties, every vehicle is self-interested,
+      and the vehicles merge safely.
+    </p>
+    <div class="video-wide">
+      <video autoplay loop muted playsinline controls src="assets/highway.mp4"></video>
+    </div>
+    <table class="res">
+      <tr><th>10 seeds &times; 300 s, 0.3 veh/s</th><th>pairs losing separation</th><th>vehicles that leave</th></tr>
+      <tr><td>No coordination</td><td>391</td><td>985</td></tr>
+      <tr><td>DATE'19 non-cooperative</td><td>0</td><td>54 (deadlock)</td></tr>
+      <tr><td>DATE'19 cooperative, every vehicle obeys</td><td>0</td><td>982</td></tr>
+      <tr><td>DATE'19 cooperative, 30% selfish</td><td>624</td><td>826</td></tr>
+      <tr><td class="ours">Ours (penalties)</td><td class="ours">0</td><td class="ours">977</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ corridor -->
+<section class="section results">
+  <div class="container">
+    <h2 class="title is-3">Air-corridor merging</h2>
+    <p class="task-intro">
+      The corridor-merging scenario of Low et al. (CDC 2026): 8 air taxis with planar unicycle dynamics
+      (30&ndash;90&nbsp;m/s, turn rate at most 0.1&nbsp;rad/s) merge into an air corridor with a separation of
+      500&nbsp;m. Each vehicle chooses an entry slot every 10&nbsp;s. Time-to-reach (TTR) priority with
+      target spacing assumes that lower-priority vehicles accept their slots; selfish vehicles take their
+      earliest slot instead. Our reproduction is simplified: the TTR is approximated by Dubins paths, and
+      there is no wind and no safety filter.
+    </p>
+    <div class="video-wide" style="max-width:52rem;">
+      <video autoplay loop muted playsinline controls src="assets/corridor.mp4"></video>
+    </div>
+    <table class="res">
+      <tr><th>100 scenarios &times; 300 s</th><th>runs that lose separation</th><th>safe runs with every vehicle entering</th></tr>
+      <tr><td>Min TTR (no coordination)</td><td>98</td><td>2%</td></tr>
+      <tr><td>DATE'19 non-cooperative</td><td>81</td><td>19%</td></tr>
+      <tr><td>TTR priority, every vehicle obeys</td><td>43</td><td>57%</td></tr>
+      <tr><td>TTR priority, 30% selfish</td><td>85</td><td>15%</td></tr>
+      <tr><td>TTR priority, 100% selfish</td><td>98</td><td>2%</td></tr>
+      <tr><td class="ours">Ours (penalties, all vehicles self-interested)</td><td class="ours">26</td><td class="ours">74%</td></tr>
+    </table>
+    <p class="note-line">In every remaining run, some epoch has a conflict in which no vehicle has a conflict-free slot, so no certificate exists; such conflicts need a tactical safety filter.</p>
+  </div>
+</section>
+
+<!-- ============================================================ more cases -->
+<section class="section results">
+  <div class="container">
+    <h2 class="title is-3">More case studies</h2>
+    <div class="grid">
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/delivery.mp4"></video>
+        <div class="label">Drone delivery over a shared urban airspace</div>
+        <div class="desc">Two operators file operational intents as in ASTM F3548-21. FCFS deconfliction loses separation once drones ignore it (23 pairs with 30% selfish); with the penalties, 0 pairs for 0% and 30% selfish drones.</div>
+      </div>
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/voltage.mp4"></video>
+        <div class="label">Rooftop-PV voltage management</div>
+        <div class="desc">Households on a low-voltage feeder cap their export. Without control, 291 epochs exceed the voltage limit; volt-watt curtails the far-end households about 106 times more than the near ones; the congestion charge keeps the voltage within the limit with a far/near ratio of 1.1.</div>
+      </div>
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/intersection.mp4"></video>
+        <div class="label">Closed-loop four-way intersection</div>
+        <div class="desc">Vehicles decide on noisy state estimates every 0.5&nbsp;s: no incentive, DATE'19 non-cooperative and cooperative, and penalties with random or arrival order.</div>
+      </div>
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/dock.mp4"></video>
+        <div class="label">Shared dock with a FIFO arbiter</div>
+        <div class="desc">A central first-come-first-served arbiter with 30% selfish robots (left) and the same arbiter with penalties (right).</div>
+      </div>
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/robots.mp4"></video>
+        <div class="label">Multi-robot workspace</div>
+        <div class="desc">Robots cross a grid of shared work zones and choose their start times or wait; left without and right with the penalties.</div>
+      </div>
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/merging.mp4"></video>
+        <div class="label">Merging ring</div>
+        <div class="desc">Each entry conflicts with its two neighbours. Without incentives every vehicle goes and neighbours conflict; with the penalties some vehicles yield and no conflict occurs in the shown run.</div>
+      </div>
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/uav.mp4"></video>
+        <div class="label">UAV corridor</div>
+        <div class="desc">UAVs depart along a corridor with timing-derived conflicts; without incentives pairs violate separation, with the penalties none do. The certificates are reused when a UAV is added, removed or replaced.</div>
+      </div>
+      <div class="cell">
+        <video autoplay loop muted playsinline controls src="assets/ev.mp4"></video>
+        <div class="label">EV charging (illustration)</div>
+        <div class="desc">EVs behind one transformer choose their charging power; without a fee the transformer overloads.</div>
+      </div>
+    </div>
+    <p class="note-line" style="text-align:center;">All decisions in the videos are computed by the method (penalties, then best replies in a priority order), not scripted.</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>Page layout adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> (CC BY-SA 4.0).</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
