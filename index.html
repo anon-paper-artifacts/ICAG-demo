@@ -138,9 +138,8 @@
   <div class="container">
     <h2 class="title is-3">Highway on-ramp merging</h2>
     <p class="task-intro">
-      The merging scenario of optimizing A/G contracts (DATE'19): a main lane and an on-ramp, Poisson
-      arrivals, and 3&nbsp;s templates chosen every 0.5&nbsp;s. The non-cooperative composition of DATE'19 uses
-      only templates that are safe against every template of the neighbours: it never loses separation but
+      A main lane and an on-ramp, Poisson arrivals, and 3&nbsp;s templates chosen every 0.5&nbsp;s. The
+      non-cooperative composition of the vehicles' contracts uses only templates that are safe against every template of the neighbours: it never loses separation but
       deadlocks before the merge region. With the certified penalties, every vehicle is self-interested,
       and the vehicles merge safely.
     </p>
@@ -150,9 +149,9 @@
     <table class="res">
       <tr><th>10 seeds &times; 300 s, 0.3 veh/s</th><th>pairs losing separation</th><th>vehicles that leave</th></tr>
       <tr><td>No coordination</td><td>391</td><td>985</td></tr>
-      <tr><td>DATE'19 non-cooperative</td><td>0</td><td>54 (deadlock)</td></tr>
-      <tr><td>DATE'19 cooperative, every vehicle obeys</td><td>0</td><td>982</td></tr>
-      <tr><td>DATE'19 cooperative, 30% selfish</td><td>624</td><td>826</td></tr>
+      <tr><td>Non-cooperative composition</td><td>0</td><td>54 (deadlock)</td></tr>
+      <tr><td>Cooperative composition, every vehicle obeys</td><td>0</td><td>982</td></tr>
+      <tr><td>Cooperative composition, 30% selfish</td><td>624</td><td>826</td></tr>
       <tr><td class="ours">Ours (penalties)</td><td class="ours">0</td><td class="ours">977</td></tr>
     </table>
   </div>
@@ -163,20 +162,20 @@
   <div class="container">
     <h2 class="title is-3">UAV corridor</h2>
     <p class="task-intro">
-      The corridor-merging scenario of Low et al. (CDC 2026): 8 air taxis with planar unicycle dynamics
-      (30&ndash;90&nbsp;m/s, turn rate at most 0.1&nbsp;rad/s) merge into an air corridor with a separation of
-      500&nbsp;m. Each vehicle chooses an entry slot every 10&nbsp;s. Time-to-reach (TTR) priority with
-      target spacing assumes that lower-priority vehicles accept their slots; selfish vehicles take their
-      earliest slot instead. Our reproduction is simplified: the TTR is approximated by Dubins paths, and
-      there is no wind and no safety filter.
+      8 air taxis with planar unicycle dynamics (30&ndash;90&nbsp;m/s, turn rate at most 0.1&nbsp;rad/s)
+      merge into an air corridor with a separation of 500&nbsp;m. Each vehicle chooses an entry slot every
+      10&nbsp;s. Time-to-reach (TTR) priority with target spacing assumes that lower-priority vehicles accept
+      their slots; selfish vehicles take their earliest slot instead. The TTR is approximated by Dubins paths,
+      and there is no wind.
     </p>
     <div class="video-wide" style="max-width:52rem;">
       <video autoplay loop muted playsinline controls src="assets/corridor.mp4"></video>
     </div>
+    <p class="note-line" style="text-align:center;">Red ring: two taxis closer than 500&nbsp;m (loss of separation). Yellow dashed ring: a selfish taxi, which takes its earliest slot instead of the recommended one. In the panel with the penalties, every taxi is selfish.</p>
     <table class="res">
       <tr><th>100 scenarios &times; 300 s</th><th>runs that lose separation</th><th>safe runs with every vehicle entering</th></tr>
       <tr><td>Min TTR (no coordination)</td><td>98</td><td>2%</td></tr>
-      <tr><td>DATE'19 non-cooperative</td><td>81</td><td>19%</td></tr>
+      <tr><td>Non-cooperative composition</td><td>81</td><td>19%</td></tr>
       <tr><td>TTR priority, every vehicle obeys</td><td>43</td><td>57%</td></tr>
       <tr><td>TTR priority, 30% selfish</td><td>85</td><td>15%</td></tr>
       <tr><td>TTR priority, 100% selfish</td><td>98</td><td>2%</td></tr>
@@ -204,7 +203,7 @@
       <div class="cell">
         <video autoplay loop muted playsinline controls src="assets/intersection.mp4"></video>
         <div class="label">Closed-loop four-way intersection</div>
-        <div class="desc">Vehicles decide on noisy state estimates every 0.5&nbsp;s: no incentive, DATE'19 non-cooperative and cooperative, and penalties with random or arrival order.</div>
+        <div class="desc">Vehicles decide on noisy state estimates every 0.5&nbsp;s: no incentive, non-cooperative and cooperative composition, and penalties with random or arrival order.</div>
       </div>
       <div class="cell">
         <video autoplay loop muted playsinline controls src="assets/dock.mp4"></video>
