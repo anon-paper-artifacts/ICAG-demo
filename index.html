@@ -115,10 +115,10 @@
     <h2 class="title is-3">Why a priority rule needs incentives: drones queueing for a corridor</h2>
     <p class="task-intro">
       Drones arrive in a stream and enter a long, narrow corridor whose mouth admits one drone per 4&nbsp;s
-      slot, like a queue at a canteen window. Each drone chooses its entry slot; its payoff is its value of
+      slot. Each drone chooses its entry slot; its payoff is its value of
       time times the delay saved. A first-come-first-served (FCFS) rule assigns the slots, but it does not
       change the payoffs: a selfish drone gains by cutting in. A penalty on two drones in one slot makes
-      queueing the best reply of every drone.
+      queueing the best response of every drone.
     </p>
     <div class="video-wide">
       <video autoplay loop muted playsinline controls src="assets/queue.mp4"></video>
@@ -129,7 +129,6 @@
       <tr><td>FCFS rule only, 30% selfish</td><td>1696 / 1765</td><td>397</td><td>1781</td><td>25</td></tr>
       <tr><td class="ours">FCFS rule + penalty (all drones self-interested)</td><td class="ours">1765 / 1765</td><td class="ours">0</td><td class="ours">14</td><td class="ours">1</td></tr>
     </table>
-    <p class="note-line">The 14 pairs of the last row also occur when every drone obeys the rule; they come from the motion in the queue, not from the decisions.</p>
   </div>
 </section>
 
@@ -138,8 +137,11 @@
   <div class="container">
     <h2 class="title is-3">Highway on-ramp merging</h2>
     <p class="task-intro">
-      A main lane and an on-ramp, Poisson arrivals, and 3&nbsp;s templates chosen every 0.5&nbsp;s. The
-      non-cooperative composition of the vehicles' contracts uses only templates that are safe against every template of the neighbours: it never loses separation but
+      A main lane and an on-ramp. Vehicles arrive at random times (a Poisson process: on average a fixed
+      number per second, independently of each other). Every 0.5&nbsp;s each vehicle picks one of a few
+      3&nbsp;s manoeuvres, called templates: on the main lane keep the speed, accelerate, yield or brake; on
+      the ramp go, yield or stop. The non-cooperative composition of the vehicles' contracts uses only
+      templates that are safe against every template of the neighbours: it never loses separation but
       deadlocks before the merge region. With the certified penalties, every vehicle is self-interested,
       and the vehicles merge safely.
     </p>
@@ -206,7 +208,7 @@
         <div class="desc">Vehicles decide on noisy state estimates every 0.5&nbsp;s: no incentive, non-cooperative and cooperative composition, and penalties with random or arrival order.</div>
       </div>
     </div>
-    <p class="note-line" style="text-align:center;">All decisions in the videos are computed by the method (penalties, then best replies in a priority order), not scripted.</p>
+    <p class="note-line" style="text-align:center;">All decisions in the videos are computed by the method (penalties, then best responses in a priority order), not scripted.</p>
   </div>
 </section>
 
