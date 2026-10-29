@@ -81,8 +81,8 @@
             agent and an enforceable penalty for unsafe joint behaviour. Model checking identifies the unsafe
             combinations of decisions as counterexamples to the system requirements, and SMT solving computes
             the penalties together with <em>certificates</em> that exclude each unsafe combination from the
-            Nash equilibria: a certificate names an agent that gains at least a fixed margin by changing its
-            own decision, and is stored in the contract of that agent. The certificates guarantee that every
+            Nash equilibria. Each certificate is attached to the contract of an agent that gains at least a
+            fixed margin by changing its own decision. The certificates guarantee that every
             Nash equilibrium of the composed system is safe, and they remain valid when an agent is replaced
             by one whose contract refines its own. We then develop rules to add and remove agents while
             reusing the existing certificates.
@@ -161,7 +161,7 @@
 <!-- ============================================================ corridor -->
 <section class="section results">
   <div class="container">
-    <h2 class="title is-3">Air-corridor merging</h2>
+    <h2 class="title is-3">UAV corridor</h2>
     <p class="task-intro">
       The corridor-merging scenario of Low et al. (CDC 2026): 8 air taxis with planar unicycle dynamics
       (30&ndash;90&nbsp;m/s, turn rate at most 0.1&nbsp;rad/s) merge into an air corridor with a separation of
@@ -215,21 +215,6 @@
         <video autoplay loop muted playsinline controls src="assets/robots.mp4"></video>
         <div class="label">Multi-robot workspace</div>
         <div class="desc">Robots cross a grid of shared work zones and choose their start times or wait; left without and right with the penalties.</div>
-      </div>
-      <div class="cell">
-        <video autoplay loop muted playsinline controls src="assets/merging.mp4"></video>
-        <div class="label">Merging ring</div>
-        <div class="desc">Each entry conflicts with its two neighbours. Without incentives every vehicle goes and neighbours conflict; with the penalties some vehicles yield and no conflict occurs in the shown run.</div>
-      </div>
-      <div class="cell">
-        <video autoplay loop muted playsinline controls src="assets/uav.mp4"></video>
-        <div class="label">UAV corridor</div>
-        <div class="desc">UAVs depart along a corridor with timing-derived conflicts; without incentives pairs violate separation, with the penalties none do. The certificates are reused when a UAV is added, removed or replaced.</div>
-      </div>
-      <div class="cell">
-        <video autoplay loop muted playsinline controls src="assets/ev.mp4"></video>
-        <div class="label">EV charging (illustration)</div>
-        <div class="desc">EVs behind one transformer choose their charging power; without a fee the transformer overloads.</div>
       </div>
     </div>
     <p class="note-line" style="text-align:center;">All decisions in the videos are computed by the method (penalties, then best replies in a priority order), not scripted.</p>
