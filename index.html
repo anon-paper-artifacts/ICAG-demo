@@ -132,9 +132,11 @@
       <tr><th>5 seeds &times; 1 h</th><th>pairs losing separation</th><th>orders delivered in 1 h</th><th>mean delivery time [min]</th></tr>
       <tr><td>No coordination</td><td>117</td><td>96%</td><td>1.96</td></tr>
       <tr><td>Non-cooperative composition</td><td>0</td><td>4%</td><td>2.00</td></tr>
-      <tr><td>Cooperative composition, every drone obeys</td><td>0</td><td>66%</td><td>6.64</td></tr>
+      <tr><td>First come, first served, 10% selfish</td><td>6</td><td>70%</td><td>7.40</td></tr>
       <tr><td>First come, first served, 30% selfish</td><td>23</td><td>76%</td><td>5.96</td></tr>
+      <tr><td>First come, first served, 100% selfish</td><td>117</td><td>96%</td><td>1.96</td></tr>
       <tr><td class="ours">Ours (penalties, 30% selfish)</td><td class="ours">0</td><td class="ours">66%</td><td class="ours">8.73</td></tr>
+      <tr><td class="ours">Ours (penalties, 100% selfish)</td><td class="ours">0</td><td class="ours">66%</td><td class="ours">8.73</td></tr>
     </table>
     <h3 class="sub">What the contracts look like (two-drone instance)</h3>
 <pre class="contract">CONTRACT D1:
@@ -206,8 +208,6 @@ SYSTEM:  Penalty separation : 0 .. 20;   Margin: 0.1;</pre>
       <tr><th>10 seeds &times; 300 s, 0.3 veh/s</th><th>pairs losing separation</th><th>vehicles that leave</th></tr>
       <tr><td>No coordination</td><td>391</td><td>985</td></tr>
       <tr><td>Non-cooperative composition</td><td>0</td><td>54 (deadlock)</td></tr>
-      <tr><td>Cooperative composition, 30% selfish</td><td>624</td><td>826</td></tr>
-      <tr><td>Cooperative composition, 100% selfish</td><td>391</td><td>985</td></tr>
       <tr><td class="ours">Ours (penalties)</td><td class="ours">0</td><td class="ours">977</td></tr>
     </table>
     <h3 class="sub">What the contracts look like (one epoch: leader M1, follower M2, ramp vehicle R)</h3>
@@ -256,7 +256,7 @@ SYSTEM:  Penalty follow_M1_M2 : 0 .. 20;  Penalty merge_R_M1 : 0 .. 20;  ...  Ma
       <tr><th>100 scenarios &times; 300 s</th><th>runs that lose separation</th><th>safe runs with every vehicle entering</th></tr>
       <tr><td>Min TTR (no coordination)</td><td>98</td><td>2%</td></tr>
       <tr><td>Non-cooperative composition</td><td>81</td><td>19%</td></tr>
-      <tr><td>TTR priority, every vehicle obeys</td><td>43</td><td>57%</td></tr>
+      <tr><td>TTR priority, 10% selfish</td><td>65</td><td>35%</td></tr>
       <tr><td>TTR priority, 30% selfish</td><td>85</td><td>15%</td></tr>
       <tr><td>TTR priority, 100% selfish</td><td>98</td><td>2%</td></tr>
       <tr><td class="ours">Ours (penalties, all vehicles self-interested)</td><td class="ours">26</td><td class="ours">74%</td></tr>
