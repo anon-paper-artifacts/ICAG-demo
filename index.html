@@ -35,6 +35,11 @@
     .grid .label { margin-top: 6px; font-weight: 600; color: #363636; }
     .grid .desc { color: #4a4a4a; font-size: .88rem; }
     footer.footer { background: #fafafa; }
+    .contract { max-width: 62rem; margin: 0 auto 1rem; background: #f7f7f9; border: 1px solid #e2e2e8; border-radius: 8px; padding: .7rem 1rem; font-size: .78rem; line-height: 1.35; overflow-x: auto; }
+    .flow { max-width: 62rem; margin: 0 auto 1.4rem; color: #4a4a4a; font-size: .92rem; }
+    .flow ol { margin-left: 1.4rem; }
+    .flow li { margin-bottom: 3px; }
+    h3.sub { max-width: 62rem; margin: 1.2rem auto .4rem; font-weight: 700; font-size: 1.02rem; }
   </style>
 </head>
 <body>
@@ -109,6 +114,55 @@
   </div>
 </section>
 
+<!-- ============================================================ delivery -->
+<section class="section results" id="delivery">
+  <div class="container">
+    <h2 class="title is-3">Drone delivery</h2>
+    <p class="task-intro">
+      Drones of two depots deliver orders over a shared 4&nbsp;km &times; 4&nbsp;km airspace of 100&nbsp;m cells and
+      10&nbsp;s time bins. Every 30&nbsp;s each drone with an order takes off now or after 30 or 60&nbsp;s, on the
+      direct route or a detour, or waits. With one drone per depot and the two templates "take off now" (P) and
+      "wait" (W), this is the two-drone example of the paper: the direct routes cross in 8 cells, waiting costs
+      $0.25 of lateness, and without incentives both drones take off.
+    </p>
+    <div class="video-wide" style="max-width:62rem;">
+      <video autoplay loop muted playsinline controls src="assets/delivery.mp4"></video>
+    </div>
+    <table class="res">
+      <tr><th>5 seeds &times; 1 h</th><th>pairs losing separation</th><th>orders delivered in 1 h</th><th>mean delivery time [min]</th></tr>
+      <tr><td>No coordination</td><td>117</td><td>96%</td><td>1.96</td></tr>
+      <tr><td>Non-cooperative composition</td><td>0</td><td>4%</td><td>2.00</td></tr>
+      <tr><td>Cooperative composition, every drone obeys</td><td>0</td><td>66%</td><td>6.64</td></tr>
+      <tr><td>First come, first served, 30% selfish</td><td>23</td><td>76%</td><td>5.96</td></tr>
+      <tr><td class="ours">Ours (penalties, 30% selfish)</td><td class="ours">0</td><td class="ours">66%</td><td class="ours">8.73</td></tr>
+    </table>
+    <h3 class="sub">What the contracts look like (two-drone instance)</h3>
+<pre class="contract">CONTRACT D1:
+    parameter {W, P} variable s_D1;               -- decision: wait or take off now
+    output boolean variable occ_D1_17_25;  ...      -- one occupancy output per shared cell (8 cells)
+    Assumptions:  true;                             -- wind, cross-track error and jitter bounds enter the windows
+    Guarantees:                                     -- operational intent: cell (17,25) only in time bins 0..16
+        G(occ_D1_17_25 -> (s_D1 = P &amp; t &gt;= 0 &amp; t &lt;= 16));
+        ...
+    Payoff:       0.25 if s_D1 = P;                -- dollars saved by not waiting
+    Certificates:                                   -- written by the tool
+        separation: s_D1 = P &amp; s_D2 = P  =&gt;  s_D1 := W  [margin 0.1];
+
+CONTRACT separation:                               -- system contract of the pair
+    Guarantees:   G(!(occ_D1_17_25 &amp; occ_D2_17_25));  ...   -- never in the same cell at the same time
+
+SYSTEM:  Penalty separation : 0 .. 20;   Margin: 0.1;</pre>
+    <h3 class="sub">How the drones decide (every 30&nbsp;s)</h3>
+    <div class="flow"><ol>
+      <li>Each drone with an order computes the intent of each template from its wind, cross-track and jitter bounds.</li>
+      <li>Pairs of intents that share a cell in the same time bin are unsafe; CHASE decides this cell by cell (here it returns the unsafe pattern (P, P)).</li>
+      <li>W conflicts with nothing, so the penalty follows from the formula: regret $0.25 plus margin 0.1 gives $0.35, charged to both drones only if (P, P) is executed. The certificate "drone 1 switches to W" is stored in drone 1's contract.</li>
+      <li>In order of their order times, the drones announce a template; a drone revises only to a strictly better response. Drone 1 announces P; drone 2 then prefers W (0 &gt; 0.25 &minus; 0.35).</li>
+      <li>When nobody revises, the announced templates form a Nash equilibrium, (P, W), which is safe; the drones fly them, and no penalty is paid.</li>
+    </ol></div>
+  </div>
+</section>
+
 <!-- ============================================================ queue -->
 <section class="section results" id="videos">
   <div class="container">
@@ -156,6 +210,30 @@
       <tr><td>Cooperative composition, 100% selfish</td><td>391</td><td>985</td></tr>
       <tr><td class="ours">Ours (penalties)</td><td class="ours">0</td><td class="ours">977</td></tr>
     </table>
+    <h3 class="sub">What the contracts look like (one epoch: leader M1, follower M2, ramp vehicle R)</h3>
+<pre class="contract">CONTRACT M1:
+    parameter {KEEP, ACC, YIELD, BRAKE} variable s_M1;    -- 3 s templates
+    output integer (0:1181) variable p_M1;                  -- position in decimetres
+    Guarantees:                                             -- position tube for each 0.5 s interval
+        G((t = 0 &amp; s_M1 = KEEP) -&gt; (p_M1 &gt;= 878 &amp; p_M1 &lt;= 924));
+        G((t = 1 &amp; s_M1 = KEEP) -&gt; (p_M1 &gt;= 917 &amp; p_M1 &lt;= 965));
+        ...
+        G((t = 3 &amp; s_M1 = BRAKE) -&gt; (p_M1 &gt;= 938 &amp; p_M1 &lt;= 951));
+    Payoff:   (1.76, 0.88) if s_M1 = KEEP;  (2.216, 1.086) if s_M1 = ACC;  ...   -- (urgent, relaxed)
+
+CONTRACT follow_M1_M2:  Guarantees:  G(p_M1 - p_M2 &gt;= 20);                     -- 2 m gap
+CONTRACT merge_R_M1:    Guarantees:  G((p_R &gt;= 1001 &amp; p_M1 &gt;= 1001) -&gt; (p_R - p_M1 &gt;= 20 | p_M1 - p_R &gt;= 20));
+
+SYSTEM:  Penalty follow_M1_M2 : 0 .. 20;  Penalty merge_R_M1 : 0 .. 20;  ...  Margin: 0.1;</pre>
+    <h3 class="sub">How the vehicles decide (every 0.5&nbsp;s)</h3>
+    <div class="flow"><ol>
+      <li>Each vehicle computes the position tube of each template from its estimated state, with bounded estimation and actuation errors.</li>
+      <li>For every pair of neighbours, the unsafe template pairs are those whose tubes come closer than 2&nbsp;m, e.g., the leader brakes while the follower keeps its speed (checked by interval bounds online; 914 sampled pairs re-decided by CHASE agree).</li>
+      <li>If every conflict has a vehicle with a conflict-free template, the penalty is its regret plus 0.1 (56% of the epochs); otherwise Z3 computes the smallest penalties.</li>
+      <li>In order of position, the vehicles announce templates and revise only to strictly better responses, until none revises: a Nash equilibrium, which is safe.</li>
+      <li>The vehicles execute the first 0.5&nbsp;s of their templates, and the next epoch starts from the new state.</li>
+    </ol></div>
+
   </div>
 </section>
 
@@ -183,6 +261,25 @@
       <tr><td>TTR priority, 100% selfish</td><td>98</td><td>2%</td></tr>
       <tr><td class="ours">Ours (penalties, all vehicles self-interested)</td><td class="ours">26</td><td class="ours">74%</td></tr>
     </table>
+    <h3 class="sub">What the contracts look like (first epoch of scenario 2)</h3>
+<pre class="contract">taxi 0:  state (-2.405 km, -1.658 km, 0.723 rad), value of time 2 per s, time to reach 32.9 s
+         decisions: entry slots 4, 5, 6, ... (entry at 40 s, 50 s, 60 s, ...), 25 options
+         guarantee of slot k: the planned Dubins path to the entry, flown at the constant speed
+                              that reaches the entry at 10 k seconds (possibly after one holding circle)
+         payoff of slot k: -2 x (10 k - 32.9)
+
+system contract of taxis (0, 1): separation &gt;= 500 m whenever both fly
+unsafe slot pairs of (0, 1): (9, 9), (10, 10), (10, 11), (11, 11), (11, 12), (12, 12), ...  (63 pairs)
+                              -- checked on the planned trajectories, not with CHASE</pre>
+    <h3 class="sub">How the air taxis decide (every 10&nbsp;s)</h3>
+    <div class="flow"><ol>
+      <li>Each taxi that has not entered lists the slots it can reach and plans a Dubins path for each.</li>
+      <li>Every pair of slots whose planned paths come closer than 500&nbsp;m is unsafe.</li>
+      <li>The penalty on an unsafe pair is the largest payoff difference between two slots of a taxi plus 0.1.</li>
+      <li>In order of time to reach, the taxis announce slots and revise only to strictly better responses, starting from the recommended TTR-priority slots, until none revises.</li>
+      <li>If no taxi of a conflict has a conflict-free slot (e.g., two taxis that start too close), no penalty can help, and a tactical safety filter is needed.</li>
+    </ol></div>
+
     <p class="note-line">In every remaining run, some epoch has a conflict in which no vehicle has a conflict-free slot, so no certificate exists; such conflicts need a tactical safety filter.</p>
   </div>
 </section>
@@ -192,11 +289,6 @@
   <div class="container">
     <h2 class="title is-3">More case studies</h2>
     <div class="grid">
-      <div class="cell">
-        <video autoplay loop muted playsinline controls src="assets/delivery.mp4"></video>
-        <div class="label">Drone delivery over a shared urban airspace</div>
-        <div class="desc">The motivating example at scale: drones of two depots deliver orders over a shared 4&nbsp;km &times; 4&nbsp;km airspace, and each drone takes off now or later, on a direct route or a detour. First-come-first-served deconfliction loses separation once drones ignore it (23 pairs with 30% selfish); with the penalties, 0 pairs for 0% and 30% selfish drones.</div>
-      </div>
       <div class="cell">
         <video autoplay loop muted playsinline controls src="assets/voltage.mp4"></video>
         <div class="label">Rooftop-PV voltage management</div>
