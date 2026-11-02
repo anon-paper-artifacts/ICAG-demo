@@ -143,29 +143,6 @@
       <tr><td class="ours">Ours (incentives)</td><td class="ours">852</td><td class="ours">0</td><td class="ours">785</td><td class="ours">1074</td><td class="ours">0</td><td class="ours">988</td></tr>
     </table>
     <p class="note-line">Entered: vehicles that enter the section (entry waits while the first 15&nbsp;m of a lane are occupied). Collisions: vehicle pairs that come closer than 2&nbsp;m at least once. Passed: vehicles that pass the whole section. With the incentives, no pair collides and the mean travel time is 22.8&nbsp;s.</p>
-    <h3 class="sub">What the contracts look like (one epoch: ramp vehicle R and main-lane vehicle M side by side at 74&nbsp;m)</h3>
-<pre class="contract">CONTRACT M:
-    parameter {KEEP, ACC, YIELD, BRAKE} variable s_M;      -- the decision: a 3 s maneuver
-    output integer (0:1051) variable p_M;                    -- position in decimetres
-    Guarantees:                                              -- position tube per 0.5 s interval
-        G((t = 0 &amp; s_M = KEEP) -&gt; (p_M &gt;= 737 &amp; p_M &lt;= 791));
-        G((t = 1 &amp; s_M = KEEP) -&gt; (p_M &gt;= 784 &amp; p_M &lt;= 837));
-        ...
-        G((t = 5 &amp; s_M = BRAKE) -&gt; (p_M &gt;= 831 &amp; p_M &lt;= 851));
-    Payoff:  (1.544, 0.753) if KEEP;  (2, 1) if ACC;  (0.98, 0.43) if YIELD;  (-0.3, -0.3) if BRAKE;
-                                                             -- (value of time 1, value of time 0.5)
-
-CONTRACT merge_R_M:  Guarantees:  G((p_R &gt;= 1001 &amp; p_M &gt;= 1001) -&gt; (p_R - p_M &gt;= 20 | p_M - p_R &gt;= 20));
-
-SYSTEM:  Penalty merge_R_M : 0 .. 20;  Margin: 0.1;</pre>
-    <h3 class="sub">How the vehicles decide (every 0.5&nbsp;s)</h3>
-    <div class="flow"><ol>
-      <li>Each vehicle computes the position tube of each maneuver from its estimated state: the planned position &plusmn; an error bound that grows with time.</li>
-      <li>The unsafe condition generated offline decides which maneuver pairs are unsafe, e.g., for a follow requirement, the leader's lower tube end minus the follower's upper tube end is below 2&nbsp;m in some interval. CHASE re-decides 911 sampled pairs with 0 mismatches.</li>
-      <li>If a vehicle of the pair has a maneuver that is safe whatever the others do, the penalty is the most it gives up by taking it, plus 0.1 (77% of the epochs). In the epoch above, M can yield, and the penalty is 1.132. Otherwise Z3 computes the smallest penalties.</li>
-      <li>In order of position, the vehicles announce maneuvers and revise only to strictly better responses, until none revises: a Nash equilibrium, which is safe. The penalty is never paid at the equilibrium.</li>
-      <li>The vehicles execute the first 0.5&nbsp;s of their maneuvers, and the next epoch starts from the new state.</li>
-    </ol></div>
   </div>
 </section>
 
@@ -198,28 +175,6 @@ SYSTEM:  Penalty merge_R_M : 0 .. 20;  Margin: 0.1;</pre>
       <tr><td class="ours">Ours (incentives, all taxis selfish)</td><td class="ours">57</td><td class="ours">0</td><td class="ours">43%</td><td class="ours">9.5</td><td class="ours">88%</td><td class="ours">16.3&dagger;</td></tr>
     </table>
     <p class="note-line">LoS: loss of separation, two taxis closer than 500&nbsp;m. Out: a taxi that does not enter within 300&nbsp;s. Success: share of runs without LoS in which every taxi enters. Delay: mean entry delay over the earliest possible entry. &dagger;: over the taxis that enter. With the filter, the taxis also track their paths with the vehicle dynamics of Low et al.</p>
-    <h3 class="sub">What the contracts look like (taxi 1 of scenario 1 at t = 0)</h3>
-<pre class="contract">taxi 1:  state (-3.422 km, -2.111 km, -2.476 rad), value of time 1 per s, time to reach 80.2 s
-         decisions: a path and an entry time
-            Dubins path,         length 7.2 km:   entry time in [80.2 s, 240.7 s]
-            with a holding circle, length 12.9 km: entry time in [143 s, 429 s]
-         guarantee: each 100 m cell within 250 m of the path is occupied only in an open time window
-                    whose ends shift linearly with the entry time tau, e.g., the cell at the entry:
-                    G(occ_1,c -&gt; 0.949 tau &lt; t &lt; 3.855 + tau)
-         payoff: -(tau - 80.2)
-
-system contract of taxis (i, j): G !(occ_i,c &amp; occ_j,c) for every shared cell c
-unsafe condition (generated offline by CHASE): a0 &lt; b1 &amp; b0 &lt; a1  -- the two windows of a cell overlap
-penalty at t = 0: 2 x 348.9 + 0.1 = 698.0   -- more than the cost of any change of entry time</pre>
-    <h3 class="sub">How the air taxis decide (every 10&nbsp;s)</h3>
-    <div class="flow"><ol>
-      <li>Each taxi that has not entered computes the cell windows of its current Dubins path and of a path with a holding circle.</li>
-      <li>For every pair of taxis, the unsafe condition on the windows of their shared cells gives the entry times that conflict, as open intervals.</li>
-      <li>The penalty of an unsafe pair is the largest value of time times the longest entry interval, plus 0.1. Any change of entry time costs a taxi less, so a taxi that has an entry time free of conflict with the others' current choices takes it. No solver is needed.</li>
-      <li>In order of time to reach, the taxis announce entry times and revise only to strictly better responses, until none revises.</li>
-      <li>If no taxi of a conflict has a free entry time, no penalty can help (679 of 1091 epochs end unsafe for this reason), and the safety filter of Low et al. resolves the conflict.</li>
-    </ol></div>
-    <p class="note-line" style="text-align:center;">All decisions in the videos are computed by the method (penalties, then best responses in a priority order), not scripted.</p>
   </div>
 </section>
 
