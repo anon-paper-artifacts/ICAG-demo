@@ -114,57 +114,6 @@
   </div>
 </section>
 
-<!-- ============================================================ delivery -->
-<section class="section results" id="delivery">
-  <div class="container">
-    <h2 class="title is-3">Drone delivery</h2>
-    <p class="task-intro">
-      Drones of two depots deliver orders over a shared 4&nbsp;km &times; 4&nbsp;km airspace of 100&nbsp;m cells and
-      10&nbsp;s time bins. Every 30&nbsp;s each drone with an order takes off now or after 30 or 60&nbsp;s, on the
-      direct route or a detour, or waits. With one drone per depot and the two templates "take off now" (P) and
-      "wait" (W), this is the two-drone example of the paper: the direct routes cross in 8 cells, waiting costs
-      $0.25 of lateness, and without incentives both drones take off.
-    </p>
-    <div class="video-wide" style="max-width:62rem;">
-      <video autoplay loop muted playsinline controls src="assets/delivery.mp4"></video>
-    </div>
-    <table class="res">
-      <tr><th>5 seeds &times; 1 h</th><th>pairs losing separation</th><th>orders delivered in 1 h</th><th>mean delivery time [min]</th></tr>
-      <tr><td>No coordination</td><td>117</td><td>96%</td><td>1.96</td></tr>
-      <tr><td>Non-cooperative composition</td><td>0</td><td>4%</td><td>2.00</td></tr>
-      <tr><td>First come, first served, 10% selfish</td><td>6</td><td>70%</td><td>7.40</td></tr>
-      <tr><td>First come, first served, 30% selfish</td><td>23</td><td>76%</td><td>5.96</td></tr>
-      <tr><td>First come, first served, 100% selfish</td><td>117</td><td>96%</td><td>1.96</td></tr>
-      <tr><td class="ours">Ours (penalties, 30% selfish)</td><td class="ours">0</td><td class="ours">66%</td><td class="ours">8.73</td></tr>
-      <tr><td class="ours">Ours (penalties, 100% selfish)</td><td class="ours">0</td><td class="ours">66%</td><td class="ours">8.73</td></tr>
-    </table>
-    <h3 class="sub">What the contracts look like (two-drone instance)</h3>
-<pre class="contract">CONTRACT D1:
-    parameter {W, P} variable s_D1;               -- decision: wait or take off now
-    output boolean variable occ_D1_17_25;  ...      -- one occupancy output per shared cell (8 cells)
-    Assumptions:  true;                             -- wind, cross-track error and jitter bounds enter the windows
-    Guarantees:                                     -- operational intent: cell (17,25) only in time bins 0..16
-        G(occ_D1_17_25 -> (s_D1 = P &amp; t &gt;= 0 &amp; t &lt;= 16));
-        ...
-    Payoff:       0.25 if s_D1 = P;                -- dollars saved by not waiting
-    Certificates:                                   -- written by the tool
-        separation: s_D1 = P &amp; s_D2 = P  =&gt;  s_D1 := W  [margin 0.1];
-
-CONTRACT separation:                               -- system contract of the pair
-    Guarantees:   G(!(occ_D1_17_25 &amp; occ_D2_17_25));  ...   -- never in the same cell at the same time
-
-SYSTEM:  Penalty separation : 0 .. 20;   Margin: 0.1;</pre>
-    <h3 class="sub">How the drones decide (every 30&nbsp;s)</h3>
-    <div class="flow"><ol>
-      <li>Each drone with an order computes the intent of each template from its wind, cross-track and jitter bounds.</li>
-      <li>Pairs of intents that share a cell in the same time bin are unsafe; CHASE decides this cell by cell (here it returns the unsafe pattern (P, P)).</li>
-      <li>W conflicts with nothing, so the penalty follows from the formula: regret $0.25 plus margin 0.1 gives $0.35, charged to both drones only if (P, P) is executed. The certificate "drone 1 switches to W" is stored in drone 1's contract.</li>
-      <li>In order of their order times, the drones announce a template; a drone revises only to a strictly better response. Drone 1 announces P; drone 2 then prefers W (0 &gt; 0.25 &minus; 0.35).</li>
-      <li>When nobody revises, the announced templates form a Nash equilibrium, (P, W), which is safe; the drones fly them, and no penalty is paid.</li>
-    </ol></div>
-  </div>
-</section>
-
 <!-- ============================================================ queue -->
 <section class="section results" id="videos">
   <div class="container">
