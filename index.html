@@ -80,17 +80,17 @@
             verification of cyber-physical systems (CPS) by specifying each component through the assumptions
             it makes on its environment and the guarantees it provides. In multi-agent CPS, however, each
             component is an agent with its own objective, and a contract does not specify which of its
-            admissible behaviours a self-interested agent will choose in a non-cooperative setting when it
-            interacts with other agents and with the environment. We propose <em>incentive-compatible A/G
-            contracts</em>, which extend A/G contracts in linear temporal logic (LTL) with a payoff for each
-            agent and an enforceable penalty for unsafe joint behaviour. Model checking identifies the unsafe
-            combinations of decisions as counterexamples to the system requirements, and SMT solving computes
-            the penalties together with <em>certificates</em> that exclude each unsafe combination from the
-            Nash equilibria. Each certificate is attached to the contract of an agent that gains at least a
-            fixed margin by changing its own decision. The certificates guarantee that every
-            Nash equilibrium of the composed system is safe, and they remain valid when an agent is replaced
-            by one whose contract refines its own. We then develop rules to add and remove agents while
-            reusing the existing certificates.
+            admissible behaviours a self-interested agent will choose when it interacts with other agents.
+            We propose <em>incentive-compatible A/G contracts</em>, which extend A/G contracts in linear
+            temporal logic (LTL) with a payoff for each agent and an enforceable penalty for unsafe joint
+            behaviour. Decisions are finitely many controllers, such as maneuvers or entry times on a fine time
+            grid. Model checking identifies the unsafe combinations of decisions, parameter synthesis turns them
+            into unsafe conditions that the agents evaluate online, and SMT solving computes the penalties
+            together with <em>certificates</em> that exclude each unsafe combination from the Nash equilibria.
+            Each certificate is attached to the contract of an agent that gains at least a fixed margin by
+            changing its own decision. The certificates guarantee that every Nash equilibrium of the composed
+            system is safe, and they remain valid when an agent is replaced by one whose contract refines its
+            own. Agents can also be added and removed while the existing certificates are reused.
           </p>
         </div>
       </div>
@@ -103,86 +103,69 @@
   <div class="container">
     <h2 class="title is-3">Method</h2>
     <p class="task-intro">
-      Model checking derives the unsafe combinations of decisions as counterexamples to the system
-      requirements. The penalties follow from a formula when every conflict involves an agent with a safe
-      default action, and from an SMT solver otherwise; the certificates show that no unsafe combination is a
-      Nash equilibrium. After a change, only the affected certificates are re-checked.
+      Model checking finds the unsafe combinations of decisions. When the guarantees depend on the current
+      state, parameter synthesis computes once, offline, the region of contract parameters (tube or window
+      ends) for which a combination is unsafe; the agents evaluate this unsafe condition online. The penalty
+      of a requirement follows from a formula when one of its agents has a conflict-free action, and from Z3
+      otherwise. The certificates show that no unsafe combination is a Nash equilibrium. After a change,
+      only the affected certificates are re-checked.
     </p>
     <div class="video-wide" style="max-width:46rem;">
-      <img src="assets/flow.svg" alt="Certification procedure: agent contracts and system safety requirements, model checking, incentive synthesis, certificates, online operation, and an agent-change loop" style="width:100%;background:#fff;border-radius:6px;padding:8px;">
+      <img src="assets/flow.png" alt="Certification procedure: agent contracts and system safety requirements, model checking, incentive synthesis, certificates, online operation, and an agent-change loop" style="width:100%;background:#fff;border-radius:6px;padding:8px;">
     </div>
-  </div>
-</section>
-
-<!-- ============================================================ queue -->
-<section class="section results" id="videos">
-  <div class="container">
-    <h2 class="title is-3">Why a priority rule needs incentives: drones queueing for a corridor</h2>
-    <p class="task-intro">
-      Drones arrive in a stream and enter a long, narrow corridor whose mouth admits one drone per 4&nbsp;s
-      slot. Each drone chooses its entry slot; its payoff is its value of
-      time times the delay saved. A first-come-first-served (FCFS) rule assigns the slots, but it does not
-      change the payoffs: a selfish drone gains by cutting in. A penalty on two drones in one slot makes
-      queueing the best response of every drone.
-    </p>
-    <div class="video-wide">
-      <video autoplay loop muted playsinline controls src="assets/queue.mp4"></video>
-    </div>
-    <table class="res">
-      <tr><th>50 runs &times; 240 s</th><th>entered</th><th>cut-ins</th><th>pairs within 10 m</th><th>max. crowd at the mouth</th></tr>
-      <tr><td>No rule, no incentive</td><td>1535 / 1765</td><td>584</td><td>5247</td><td>25</td></tr>
-      <tr><td>FCFS rule only, 30% selfish</td><td>1696 / 1765</td><td>397</td><td>1781</td><td>25</td></tr>
-      <tr><td class="ours">FCFS rule + penalty (all drones self-interested)</td><td class="ours">1765 / 1765</td><td class="ours">0</td><td class="ours">14</td><td class="ours">1</td></tr>
-    </table>
   </div>
 </section>
 
 <!-- ============================================================ highway -->
-<section class="section results">
+<section class="section results" id="videos">
   <div class="container">
     <h2 class="title is-3">Highway on-ramp merging</h2>
     <p class="task-intro">
-      A main lane and an on-ramp. Vehicles arrive at random times (a Poisson process: on average a fixed
-      number per second, independently of each other). Every 0.5&nbsp;s each vehicle picks one of a few
-      3&nbsp;s manoeuvres, called templates: on the main lane keep the speed, accelerate, yield or brake; on
-      the ramp go, yield or stop. The non-cooperative composition of the vehicles' contracts uses only
-      templates that are safe against every template of the neighbours: it never loses separation but
-      deadlocks before the merge region. With the certified penalties, every vehicle is self-interested,
-      and the vehicles merge safely.
+      A main lane and an on-ramp, after the merging scenario of Oh et al. (DATE&nbsp;2019), with
+      |a|&nbsp;&le;&nbsp;5&nbsp;m/s<sup>2</sup> and 0&nbsp;&le;&nbsp;v&nbsp;&le;&nbsp;10&nbsp;m/s. Vehicles arrive
+      at random times on the main lane (0.2 or 0.3 vehicles per second) and on the ramp (0.1 per second).
+      Every 0.5&nbsp;s each vehicle picks one of four 3&nbsp;s maneuvers, the same on both lanes:
+      <b>Keep</b> holds 8&nbsp;m/s, <b>Acc</b> speeds up at 2&nbsp;m/s<sup>2</sup> to 10&nbsp;m/s,
+      <b>Brake</b> brakes at 5&nbsp;m/s<sup>2</sup>, and <b>Yield</b> slows to 3&nbsp;m/s on the main lane
+      or stops 5&nbsp;m before the ramp end. A follower must stay 2&nbsp;m behind its leader, and after the
+      merge start (100&nbsp;m) a ramp vehicle and a main-lane vehicle must stay 2&nbsp;m apart. The payoff of
+      a vehicle is the time it saves, weighted by a private value of time (1 or 0.5 per second).
     </p>
     <div class="video-wide">
       <video autoplay loop muted playsinline controls src="assets/highway.mp4"></video>
     </div>
+    <p class="note-line" style="text-align:center;">Blue: main lane, green: ramp. Red ring: two vehicles closer than 2&nbsp;m (a collision). The non-cooperative composition deadlocks before the merge region.</p>
     <table class="res">
-      <tr><th>10 seeds &times; 300 s, 0.3 veh/s</th><th>pairs losing separation</th><th>vehicles that leave</th></tr>
-      <tr><td>No coordination</td><td>391</td><td>985</td></tr>
-      <tr><td>Non-cooperative composition</td><td>0</td><td>54 (deadlock)</td></tr>
-      <tr><td class="ours">Ours (penalties)</td><td class="ours">0</td><td class="ours">977</td></tr>
+      <tr><th rowspan="2">10 seeds &times; 300 s</th><th colspan="3">0.2 veh/s</th><th colspan="3">0.3 veh/s</th></tr>
+      <tr><th>entered</th><th>collisions</th><th>passed</th><th>entered</th><th>collisions</th><th>passed</th></tr>
+      <tr><td>No coordination</td><td>852</td><td>43</td><td>786</td><td>1074</td><td>71</td><td>997</td></tr>
+      <tr><td>Non-cooperative composition</td><td>354</td><td>0</td><td>50</td><td>376</td><td>0</td><td>62</td></tr>
+      <tr><td class="ours">Ours (incentives)</td><td class="ours">852</td><td class="ours">0</td><td class="ours">785</td><td class="ours">1074</td><td class="ours">0</td><td class="ours">988</td></tr>
     </table>
-    <h3 class="sub">What the contracts look like (one epoch: leader M1, follower M2, ramp vehicle R)</h3>
-<pre class="contract">CONTRACT M1:
-    parameter {KEEP, ACC, YIELD, BRAKE} variable s_M1;    -- 3 s templates
-    output integer (0:1181) variable p_M1;                  -- position in decimetres
-    Guarantees:                                             -- position tube for each 0.5 s interval
-        G((t = 0 &amp; s_M1 = KEEP) -&gt; (p_M1 &gt;= 878 &amp; p_M1 &lt;= 924));
-        G((t = 1 &amp; s_M1 = KEEP) -&gt; (p_M1 &gt;= 917 &amp; p_M1 &lt;= 965));
+    <p class="note-line">Entered: vehicles that enter the section (entry waits while the first 15&nbsp;m of a lane are occupied). Collisions: vehicle pairs that come closer than 2&nbsp;m at least once. Passed: vehicles that pass the whole section. With the incentives, no pair collides and the mean travel time is 22.8&nbsp;s.</p>
+    <h3 class="sub">What the contracts look like (one epoch: ramp vehicle R and main-lane vehicle M side by side at 74&nbsp;m)</h3>
+<pre class="contract">CONTRACT M:
+    parameter {KEEP, ACC, YIELD, BRAKE} variable s_M;      -- the decision: a 3 s maneuver
+    output integer (0:1051) variable p_M;                    -- position in decimetres
+    Guarantees:                                              -- position tube per 0.5 s interval
+        G((t = 0 &amp; s_M = KEEP) -&gt; (p_M &gt;= 737 &amp; p_M &lt;= 791));
+        G((t = 1 &amp; s_M = KEEP) -&gt; (p_M &gt;= 784 &amp; p_M &lt;= 837));
         ...
-        G((t = 3 &amp; s_M1 = BRAKE) -&gt; (p_M1 &gt;= 938 &amp; p_M1 &lt;= 951));
-    Payoff:   (1.76, 0.88) if s_M1 = KEEP;  (2.216, 1.086) if s_M1 = ACC;  ...   -- (urgent, relaxed)
+        G((t = 5 &amp; s_M = BRAKE) -&gt; (p_M &gt;= 831 &amp; p_M &lt;= 851));
+    Payoff:  (1.544, 0.753) if KEEP;  (2, 1) if ACC;  (0.98, 0.43) if YIELD;  (-0.3, -0.3) if BRAKE;
+                                                             -- (value of time 1, value of time 0.5)
 
-CONTRACT follow_M1_M2:  Guarantees:  G(p_M1 - p_M2 &gt;= 20);                     -- 2 m gap
-CONTRACT merge_R_M1:    Guarantees:  G((p_R &gt;= 1001 &amp; p_M1 &gt;= 1001) -&gt; (p_R - p_M1 &gt;= 20 | p_M1 - p_R &gt;= 20));
+CONTRACT merge_R_M:  Guarantees:  G((p_R &gt;= 1001 &amp; p_M &gt;= 1001) -&gt; (p_R - p_M &gt;= 20 | p_M - p_R &gt;= 20));
 
-SYSTEM:  Penalty follow_M1_M2 : 0 .. 20;  Penalty merge_R_M1 : 0 .. 20;  ...  Margin: 0.1;</pre>
+SYSTEM:  Penalty merge_R_M : 0 .. 20;  Margin: 0.1;</pre>
     <h3 class="sub">How the vehicles decide (every 0.5&nbsp;s)</h3>
     <div class="flow"><ol>
-      <li>Each vehicle computes the position tube of each template from its estimated state, with bounded estimation and actuation errors.</li>
-      <li>For every pair of neighbours, the unsafe template pairs are those whose tubes come closer than 2&nbsp;m, e.g., the leader brakes while the follower keeps its speed (checked by interval bounds online; 914 sampled pairs re-decided by CHASE agree).</li>
-      <li>If every conflict has a vehicle with a conflict-free template, the penalty is its regret plus 0.1 (56% of the epochs); otherwise Z3 computes the smallest penalties.</li>
-      <li>In order of position, the vehicles announce templates and revise only to strictly better responses, until none revises: a Nash equilibrium, which is safe.</li>
-      <li>The vehicles execute the first 0.5&nbsp;s of their templates, and the next epoch starts from the new state.</li>
+      <li>Each vehicle computes the position tube of each maneuver from its estimated state: the planned position &plusmn; an error bound that grows with time.</li>
+      <li>The unsafe condition generated offline decides which maneuver pairs are unsafe, e.g., for a follow requirement, the leader's lower tube end minus the follower's upper tube end is below 2&nbsp;m in some interval. CHASE re-decides 911 sampled pairs with 0 mismatches.</li>
+      <li>If a vehicle of the pair has a maneuver that is safe whatever the others do, the penalty is the most it gives up by taking it, plus 0.1 (77% of the epochs). In the epoch above, M can yield, and the penalty is 1.132. Otherwise Z3 computes the smallest penalties.</li>
+      <li>In order of position, the vehicles announce maneuvers and revise only to strictly better responses, until none revises: a Nash equilibrium, which is safe. The penalty is never paid at the equilibrium.</li>
+      <li>The vehicles execute the first 0.5&nbsp;s of their maneuvers, and the next epoch starts from the new state.</li>
     </ol></div>
-
   </div>
 </section>
 
@@ -191,64 +174,51 @@ SYSTEM:  Penalty follow_M1_M2 : 0 .. 20;  Penalty merge_R_M1 : 0 .. 20;  ...  Ma
   <div class="container">
     <h2 class="title is-3">UAV corridor</h2>
     <p class="task-intro">
-      8 air taxis with planar unicycle dynamics (30&ndash;90&nbsp;m/s, turn rate at most 0.1&nbsp;rad/s)
-      merge into an air corridor with a separation of 500&nbsp;m. Each vehicle chooses an entry slot every
-      10&nbsp;s. Time-to-reach (TTR) priority with target spacing assumes that lower-priority vehicles accept
-      their slots; selfish vehicles take their earliest slot instead. The TTR is approximated by Dubins paths,
-      and there is no wind.
+      The corridor-merging scenario of Low et al. (CDC&nbsp;2026) and its 100 scenarios: in each, eight air
+      taxis start at random positions and headings, at least 1&nbsp;km apart, and merge into an air corridor
+      with a separation of 500&nbsp;m. Every 10&nbsp;s each taxi selects a path to the entry (its current
+      Dubins path, i.e., the shortest path under the turn-rate limit, or one with a holding circle) and an
+      entry time on a 0.1&nbsp;s grid; it then flies the path at the constant speed that reaches the entry at
+      that time. Its payoff is minus its entry delay times its private value of time (1 or 2 per second).
+      Time-to-reach (TTR) priority assigns entry times in TTR order, but only obedient taxis accept them.
     </p>
     <div class="video-wide" style="max-width:52rem;">
       <video autoplay loop muted playsinline controls src="assets/corridor.mp4"></video>
     </div>
-    <p class="note-line" style="text-align:center;">Red ring: two taxis closer than 500&nbsp;m (loss of separation). Yellow dashed ring: a selfish taxi, which takes its earliest slot instead of the recommended one. In the panel with the penalties, every taxi is selfish.</p>
+    <p class="note-line" style="text-align:center;">Scenario 1. Squares: the 100&nbsp;m cells that each taxi occupies at that moment; red: cells occupied by two taxis. Red ring: two taxis closer than 500&nbsp;m (loss of separation). Yellow dashed ring: a selfish taxi. In the panel with the incentives, every taxi is selfish.</p>
     <table class="res">
-      <tr><th>100 scenarios &times; 300 s</th><th>runs that lose separation</th><th>safe runs with every vehicle entering</th></tr>
-      <tr><td>Min TTR (no coordination)</td><td>98</td><td>2%</td></tr>
-      <tr><td>Non-cooperative composition</td><td>81</td><td>19%</td></tr>
-      <tr><td>TTR priority, 10% selfish</td><td>65</td><td>35%</td></tr>
-      <tr><td>TTR priority, 30% selfish</td><td>85</td><td>15%</td></tr>
-      <tr><td>TTR priority, 100% selfish</td><td>98</td><td>2%</td></tr>
-      <tr><td class="ours">Ours (penalties, all vehicles self-interested)</td><td class="ours">26</td><td class="ours">74%</td></tr>
+      <tr><th rowspan="2">100 scenarios &times; 300 s</th><th colspan="4">without safety filter</th><th colspan="2">with the filter of Low et al.</th></tr>
+      <tr><th>runs with LoS</th><th>runs with a taxi out</th><th>success</th><th>delay [s]</th><th>success</th><th>delay [s]</th></tr>
+      <tr><td>Min TTR (no coordination)</td><td>100</td><td>0</td><td>0%</td><td>0.0</td><td>32%</td><td>32.4&dagger;</td></tr>
+      <tr><td>Non-cooperative composition</td><td>100</td><td>100</td><td>0%</td><td>60.6&dagger;</td><td>0%</td><td>83.6&dagger;</td></tr>
+      <tr><td>TTR priority, all obedient</td><td>70</td><td>0</td><td>30%</td><td>14.2</td><td>78%</td><td>16.4</td></tr>
+      <tr><td>TTR priority, 10% selfish</td><td>83</td><td>0</td><td>17%</td><td>12.6</td><td>80%</td><td>18.1</td></tr>
+      <tr><td>TTR priority, 30% selfish</td><td>94</td><td>0</td><td>6%</td><td>9.8</td><td>69%</td><td>21.9&dagger;</td></tr>
+      <tr><td>TTR priority, 100% selfish</td><td>100</td><td>0</td><td>0%</td><td>0.0</td><td>32%</td><td>32.4&dagger;</td></tr>
+      <tr><td class="ours">Ours (incentives, all taxis selfish)</td><td class="ours">57</td><td class="ours">0</td><td class="ours">43%</td><td class="ours">9.5</td><td class="ours">88%</td><td class="ours">16.3&dagger;</td></tr>
     </table>
-    <h3 class="sub">What the contracts look like (first epoch of scenario 2)</h3>
-<pre class="contract">taxi 0:  state (-2.405 km, -1.658 km, 0.723 rad), value of time 2 per s, time to reach 32.9 s
-         decisions: entry slots 4, 5, 6, ... (entry at 40 s, 50 s, 60 s, ...), 25 options
-         guarantee of slot k: the planned Dubins path to the entry, flown at the constant speed
-                              that reaches the entry at 10 k seconds (possibly after one holding circle)
-         payoff of slot k: -2 x (10 k - 32.9)
+    <p class="note-line">LoS: loss of separation, two taxis closer than 500&nbsp;m. Out: a taxi that does not enter within 300&nbsp;s. Success: share of runs without LoS in which every taxi enters. Delay: mean entry delay over the earliest possible entry. &dagger;: over the taxis that enter. With the filter, the taxis also track their paths with the vehicle dynamics of Low et al.</p>
+    <h3 class="sub">What the contracts look like (taxi 1 of scenario 1 at t = 0)</h3>
+<pre class="contract">taxi 1:  state (-3.422 km, -2.111 km, -2.476 rad), value of time 1 per s, time to reach 80.2 s
+         decisions: a path and an entry time
+            Dubins path,         length 7.2 km:   entry time in [80.2 s, 240.7 s]
+            with a holding circle, length 12.9 km: entry time in [143 s, 429 s]
+         guarantee: each 100 m cell within 250 m of the path is occupied only in an open time window
+                    whose ends shift linearly with the entry time tau, e.g., the cell at the entry:
+                    G(occ_1,c -&gt; 0.949 tau &lt; t &lt; 3.855 + tau)
+         payoff: -(tau - 80.2)
 
-system contract of taxis (0, 1): separation &gt;= 500 m whenever both fly
-unsafe slot pairs of (0, 1): (9, 9), (10, 10), (10, 11), (11, 11), (11, 12), (12, 12), ...  (63 pairs)
-                              -- checked on the planned trajectories, not with CHASE</pre>
+system contract of taxis (i, j): G !(occ_i,c &amp; occ_j,c) for every shared cell c
+unsafe condition (generated offline by CHASE): a0 &lt; b1 &amp; b0 &lt; a1  -- the two windows of a cell overlap
+penalty at t = 0: 2 x 348.9 + 0.1 = 698.0   -- more than the cost of any change of entry time</pre>
     <h3 class="sub">How the air taxis decide (every 10&nbsp;s)</h3>
     <div class="flow"><ol>
-      <li>Each taxi that has not entered lists the slots it can reach and plans a Dubins path for each.</li>
-      <li>Every pair of slots whose planned paths come closer than 500&nbsp;m is unsafe.</li>
-      <li>The penalty on an unsafe pair is the largest payoff difference between two slots of a taxi plus 0.1.</li>
-      <li>In order of time to reach, the taxis announce slots and revise only to strictly better responses, starting from the recommended TTR-priority slots, until none revises.</li>
-      <li>If no taxi of a conflict has a conflict-free slot (e.g., two taxis that start too close), no penalty can help, and a tactical safety filter is needed.</li>
+      <li>Each taxi that has not entered computes the cell windows of its current Dubins path and of a path with a holding circle.</li>
+      <li>For every pair of taxis, the unsafe condition on the windows of their shared cells gives the entry times that conflict, as open intervals.</li>
+      <li>The penalty of an unsafe pair is the largest value of time times the longest entry interval, plus 0.1. Any change of entry time costs a taxi less, so a taxi that has an entry time free of conflict with the others' current choices takes it. No solver is needed.</li>
+      <li>In order of time to reach, the taxis announce entry times and revise only to strictly better responses, until none revises.</li>
+      <li>If no taxi of a conflict has a free entry time, no penalty can help (679 of 1091 epochs end unsafe for this reason), and the safety filter of Low et al. resolves the conflict.</li>
     </ol></div>
-
-    <p class="note-line">In every remaining run, some epoch has a conflict in which no vehicle has a conflict-free slot, so no certificate exists; such conflicts need a tactical safety filter.</p>
-  </div>
-</section>
-
-<!-- ============================================================ more cases -->
-<section class="section results">
-  <div class="container">
-    <h2 class="title is-3">More case studies</h2>
-    <div class="grid">
-      <div class="cell">
-        <video autoplay loop muted playsinline controls src="assets/voltage.mp4"></video>
-        <div class="label">Rooftop-PV voltage management</div>
-        <div class="desc">Households on a low-voltage feeder cap their export. Without control, 291 epochs exceed the voltage limit; volt-watt curtails the far-end households about 106 times more than the near ones; the congestion charge keeps the voltage within the limit with a far/near ratio of 1.1.</div>
-      </div>
-      <div class="cell">
-        <video autoplay loop muted playsinline controls src="assets/intersection.mp4"></video>
-        <div class="label">Closed-loop four-way intersection</div>
-        <div class="desc">Vehicles decide on noisy state estimates every 0.5&nbsp;s: no incentive, non-cooperative and cooperative composition, and penalties with random or arrival order.</div>
-      </div>
-    </div>
     <p class="note-line" style="text-align:center;">All decisions in the videos are computed by the method (penalties, then best responses in a priority order), not scripted.</p>
   </div>
 </section>
