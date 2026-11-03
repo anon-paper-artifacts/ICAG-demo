@@ -89,8 +89,8 @@
             <em>certificates</em> that exclude each unsafe combination from the Nash equilibria. Each certificate
             is attached to the contract of an agent that gains at least a fixed margin by changing its own
             decision. If every unsafe combination has a certificate, every Nash equilibrium of the composed system
-            is safe, and the certificates remain valid when an agent is replaced by one whose contract refines its
-            own or when agents are added or removed. We evaluate the approach on highway on-ramp merging and an
+            is safe. When an agent is replaced by one whose contract refines its own, only its own certificates are
+            re-checked, and when agents are added or removed, the existing certificates are reused. We evaluate the approach on highway on-ramp merging and an
             unmanned aerial vehicle (UAV) corridor.
           </p>
         </div>
