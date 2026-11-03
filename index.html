@@ -117,6 +117,25 @@
   </div>
 </section>
 
+<!-- ============================================================ chase -->
+<section class="section results" id="chase">
+  <div class="container">
+    <h2 class="title is-3">Contracts in CHASE</h2>
+    <p class="task-intro">
+      Each diagram is drawn by CHASE (chase-cps 0.6.5). The outer box is the system contract, the inner boxes
+      are the agent contracts and their composition (&otimes;). The red &#8828; mark shows that the composition
+      does not refine the system contract, so the decisions are unsafe. Click &#8828; to see the counterexample
+      found by nuXmv, or a contract name to fold its assumptions (A) and guarantees (G).
+    </p>
+    <p class="note-line"><b>Two drones.</b> Both take off now (<code>s1</code>, <code>s2</code> true), so both may occupy the shared cell.</p>
+    <iframe src="assets/chase/drones.html" title="CHASE diagram of the two-drone example" style="width:100%;height:460px;border:1px solid #ddd;border-radius:6px;"></iframe>
+    <p class="note-line"><b>Highway, follow requirement.</b> The last 0.5&nbsp;s interval of a leader that brakes and a follower that keeps its speed. The tubes are only 1.4&nbsp;m apart, less than 2&nbsp;m.</p>
+    <iframe src="assets/chase/follow.html" title="CHASE diagram of the follow requirement" style="width:100%;height:460px;border:1px solid #ddd;border-radius:6px;"></iframe>
+    <p class="note-line"><b>UAV corridor, entry cell.</b> Scenario 1, two taxis that both choose to enter at 85&nbsp;s. Their time windows of the entry cell overlap.</p>
+    <iframe src="assets/chase/corridor.html" title="CHASE diagram of the corridor entry cell" style="width:100%;height:460px;border:1px solid #ddd;border-radius:6px;"></iframe>
+  </div>
+</section>
+
 <!-- ============================================================ highway -->
 <section class="section results" id="videos">
   <div class="container">
