@@ -83,14 +83,15 @@
             admissible behaviours a self-interested agent will choose when it interacts with other agents.
             We propose <em>incentive-compatible A/G contracts</em>, which extend A/G contracts in linear
             temporal logic (LTL) with a payoff for each agent and an enforceable penalty for unsafe joint
-            behaviour. Decisions are finitely many controllers, such as maneuvers or entry times on a fine time
-            grid. Model checking identifies the unsafe combinations of decisions, parameter synthesis turns them
-            into unsafe conditions that the agents evaluate online, and SMT solving computes the penalties
-            together with <em>certificates</em> that exclude each unsafe combination from the Nash equilibria.
-            Each certificate is attached to the contract of an agent that gains at least a fixed margin by
-            changing its own decision. The certificates guarantee that every Nash equilibrium of the composed
-            system is safe, and they remain valid when an agent is replaced by one whose contract refines its
-            own. Agents can also be added and removed while the existing certificates are reused.
+            behaviour. Model checking identifies the unsafe combinations of decisions, and parameter synthesis
+            generates the unsafe parameter regions that the agents evaluate online. The penalties follow from a
+            closed form when an agent has a conflict-free action and from SMT solving otherwise, together with
+            <em>certificates</em> that exclude each unsafe combination from the Nash equilibria. Each certificate
+            is attached to the contract of an agent that gains at least a fixed margin by changing its own
+            decision. If every unsafe combination has a certificate, every Nash equilibrium of the composed system
+            is safe, and the certificates remain valid when an agent is replaced by one whose contract refines its
+            own or when agents are added or removed. We evaluate the approach on highway on-ramp merging and an
+            unmanned aerial vehicle (UAV) corridor.
           </p>
         </div>
       </div>
@@ -166,14 +167,13 @@
     <table class="res">
       <tr><th rowspan="2">100 scenarios &times; 300 s</th><th colspan="4">without safety filter</th><th colspan="2">with the filter of Low et al.</th></tr>
       <tr><th>runs with LoS</th><th>runs with a taxi out</th><th>success</th><th>delay [s]</th><th>success</th><th>delay [s]</th></tr>
-      <tr><td>Min TTR</td><td>100</td><td>0</td><td>0%</td><td>0.0</td><td>32%</td><td>32.4&dagger;</td></tr>
       <tr><td>Non-cooperative composition</td><td>100</td><td>100</td><td>0%</td><td>60.6&dagger;</td><td>0%</td><td>83.6&dagger;</td></tr>
       <tr><td>TTR priority, 10% selfish</td><td>83</td><td>0</td><td>17%</td><td>12.6</td><td>80%</td><td>18.1</td></tr>
       <tr><td>TTR priority, 30% selfish</td><td>94</td><td>0</td><td>6%</td><td>9.8</td><td>69%</td><td>21.9&dagger;</td></tr>
       <tr><td>TTR priority, 100% selfish</td><td>100</td><td>0</td><td>0%</td><td>0.0</td><td>32%</td><td>32.4&dagger;</td></tr>
       <tr><td class="ours">Ours (incentives, all taxis selfish)</td><td class="ours">57</td><td class="ours">0</td><td class="ours">43%</td><td class="ours">9.5</td><td class="ours">88%</td><td class="ours">16.3&dagger;</td></tr>
     </table>
-    <p class="note-line">LoS: loss of separation, two taxis closer than 500&nbsp;m. Out: a taxi that does not enter within 300&nbsp;s. Success: share of runs without LoS in which every taxi enters. Delay: mean entry delay over the earliest possible entry. &dagger;: over the taxis that enter. With the filter, the taxis also track their paths with the vehicle dynamics of Low et al.</p>
+    <p class="note-line">LoS: loss of separation, two taxis closer than 500&nbsp;m. Out: a taxi that does not enter within 300&nbsp;s. Success: share of runs without LoS in which every taxi enters. Delay: mean entry time minus the initial time to reach (TTR). &dagger;: over the taxis that enter. With the filter, the taxis also track their paths with the vehicle dynamics of Low et al.</p>
   </div>
 </section>
 
